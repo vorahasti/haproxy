@@ -1,0 +1,48 @@
+- hosts: load_balancer
+  tasks:
+  - name: "Install Loadbalancer Software - haproxy"
+    package:
+      name: "haproxy"
+      state: present
+
+  - name: "Selinux permissible"
+    selinux: 
+      policy: targeted
+      state: permissive
+
+  - name: "copying conf file to load_balancer"
+    template:
+      dest: "/etc/haproxy/haproxy.cfg"
+      src: "/root/haproxy/haproxy.cfg.j2"
+    notify: "start haproxy services"
+
+  handlers:    
+  - name: "start haproxy services"
+    service:
+      name: "haproxy"
+      state: restarted
+
+- hosts: backend
+  tasks:
+  - name: "to install httpd"
+    package:
+      name: "httpd"
+      state: present
+
+  - name: "install php"
+    package:
+      name: "php"
+      state: present
+
+  - name: "copy php file"
+    copy:
+      dest: "/var/www/html"
+      src: "/root/haproxy/file.php"
+    notify: "start httpd services"
+
+  handlers:
+  - name: "start httpd services"
+    service:
+      name: "httpd"
+      state: restarted
+

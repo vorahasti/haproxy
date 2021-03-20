@@ -1,0 +1,8 @@
+- hosts: all 
+  tasks:
+
+- name: "yum playbook"
+  import_playbook: "/root/haproxy/yum.yml"
+
+- name: "docker file"
+  import_playbook: "/root/haproxy/task12_1.yml"
